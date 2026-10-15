@@ -1,0 +1,1285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Copperline</title>
+<!--
+  BRAND NAME: "Copperline" is plain text throughout this file. To rename, find-and-replace "Copperline".
+  The logo mark is a drawn shape, not lettering, so it survives a rename.
+-->
+<meta name="description" content="Copperline answers every call in about 10 seconds and texts back every web lead in under a minute, so Houston HVAC, plumbing and electrical contractors stop losing jobs to voicemail.">
+<meta name="theme-color" content="#0A1324">
+<meta name="format-detection" content="telephone=no">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Copperline · Every call answered. Every lead followed up.">
+<meta property="og:description" content="Stop losing jobs to voicemail. Get a free 48-Hour Leak Audit with your exact dollar figure.">
+<!-- TODO(Dom): point these at the final domain once it's live -->
+<meta property="og:image" content="https://domsere-elite.github.io/call-to-booked/site/og.jpg">
+<meta property="og:url" content="https://domsere-elite.github.io/call-to-booked/site/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230A1324'/%3E%3Cg fill='none' stroke='%23EE8F3B' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M23.07 8.93A10 10 0 1 0 23.07 23.07'/%3E%3Cpath d='M19.54 12.46A5 5 0 1 0 19.54 19.54'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='1.9' fill='%23EE8F3B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a contractor's night-shift dispatch board. Deep navy, copper signal light, real call logs and
+   work-order line items instead of stock photos. One cream "work order" sheet carries the money. */
+:root{
+  --navy:#0A1324; --navy-0:#060C18; --navy-2:#0F1B31; --navy-3:#172641;
+  --line:rgba(205,216,235,.10); --line-2:rgba(205,216,235,.19); --header-bg:rgba(10,19,36,.8);
+  --ink:#F2EDE3; --ink-2:#AEB7C7; --ink-3:#7F8AA0; --ink-faint:rgba(242,237,227,.13);
+  --copper:#EE8F3B; --copper-2:#F7B26A; --copper-ink:#1A1206; --copper-line:rgba(238,143,59,.38); --copper-glow:rgba(238,143,59,.16);
+  --ok:#6FD39B; --ok-bg:rgba(111,211,155,.08); --ok-line:rgba(111,211,155,.3); --err:#FF8E7E;
+  --paper:#EEE8DC; --paper-2:#E3DCCC; --paper-card:#F7F3EA; --paper-ink:#0E1729; --paper-ink-2:#1F2C46;
+  --paper-muted:#535C6E; --paper-line:rgba(14,23,41,.14); --copper-d:#A4530F;
+
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1240px;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:88px}
+body{margin:0;background:var(--navy);color:var(--ink);font:400 17px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:clip}
+body::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
+img,svg{max-width:100%}
+a{color:inherit}
+p{margin:0}
+:focus-visible{outline:2px solid var(--copper-2);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.sec{padding-block:clamp(84px,11vw,152px)}
+.mono{font-family:var(--f-mono)}
+
+/* Type */
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.02em}
+.h1{font-size:clamp(44px,6.1vw,80px);line-height:.97;font-weight:740;font-stretch:106%;letter-spacing:-.035em}
+.h2{font-size:clamp(32px,4.5vw,60px);line-height:1.02;font-stretch:110%;letter-spacing:-.03em}
+.h3{font-size:clamp(23px,2.2vw,30px);line-height:1.12;font-stretch:106%;letter-spacing:-.018em}
+@media (min-width:720px){.h1{font-stretch:114%}}
+.lead{font-size:clamp(18px,1.55vw,21px);line-height:1.55;color:var(--ink-2);max-width:56ch;text-wrap:pretty}
+.label{display:inline-flex;align-items:center;gap:12px;font:500 12px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.label::before{content:"";width:20px;height:2px;background:var(--copper)}
+.accent{color:var(--copper)}
+.sec-head{display:grid;gap:20px;max-width:780px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 24px;border-radius:10px;border:1px solid transparent;
+  font:600 16px/1 var(--f-body);font-stretch:104%;letter-spacing:-.005em;text-decoration:none;cursor:pointer;white-space:nowrap;
+  transition:background-color .2s,border-color .2s,color .2s,transform .2s}
+.btn:active{transform:translateY(1px)}
+.btn .arr{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.btn:hover .arr{transform:translateX(3px)}
+.btn-primary{background:var(--copper);color:var(--copper-ink)}
+.btn-primary:hover{background:var(--copper-2)}
+.btn-ghost{border-color:var(--line-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink-2)}
+.btn-dark{background:var(--paper-ink);color:var(--paper)}
+.btn-dark:hover{background:var(--paper-ink-2)}
+.btn-sm{min-height:42px;padding:0 16px;font-size:15px}
+.btn-block{width:100%}
+
+/* Header */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;border-bottom:1px solid transparent;transition:background-color .3s,border-color .3s}
+.site-header.scrolled{background:var(--header-bg);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);border-bottom-color:var(--line)}
+.head-in{display:flex;align-items:center;gap:32px;height:72px}
+.brand{display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);font-family:var(--f-display);font-weight:700;font-stretch:114%;font-size:19px;letter-spacing:-.02em}
+.mark{width:28px;height:28px;flex:none}
+.mark path{fill:none;stroke:var(--copper);stroke-width:2.6;stroke-linecap:round}
+.mark circle{fill:var(--copper)}
+.nav{display:none;gap:30px;margin-left:auto}
+.nav a{color:var(--ink-2);text-decoration:none;font-size:15px;font-weight:500;transition:color .2s}
+.nav a:hover{color:var(--ink)}
+.head-cta{margin-left:auto}
+.cta-long{display:none}
+@media (min-width:900px){.nav{display:flex}.head-cta{margin-left:0}}
+@media (min-width:560px){.cta-long{display:inline}.cta-short{display:none}}
+
+/* Hero */
+.hero{position:relative;overflow-x:clip;padding-block:clamp(36px,6vw,88px) clamp(64px,8vw,112px)}
+.hero-grid{display:grid;gap:clamp(48px,5vw,72px);align-items:center}
+@media (min-width:1000px){.hero-grid{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}}
+.hero-copy{display:grid;gap:28px;min-width:0}
+.eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font:500 12px/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.eyebrow .pin{width:8px;height:8px;border-radius:50%;background:var(--copper);box-shadow:0 0 0 4px var(--copper-glow)}
+.h1 .l{display:block}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.trust{display:flex;flex-wrap:wrap;gap:10px 22px;list-style:none;margin:0;padding:0;font-size:14px;color:var(--ink-2)}
+.trust li{display:inline-flex;align-items:center;gap:8px}
+.trust svg{width:15px;height:15px;color:var(--copper);flex:none}
+@media (max-width:420px){.ctas .btn{flex:1 1 100%}}
+
+.hero-vis{position:relative;isolation:isolate;min-width:0}
+.hero-vis::before{content:"";position:absolute;inset:-14% -12%;z-index:-1;background:radial-gradient(closest-side,var(--copper-glow),transparent 72%);pointer-events:none}
+
+/* Call card */
+.call{container-type:inline-size;position:relative;border-radius:20px;background:var(--navy-2);border:1px solid var(--line-2);box-shadow:0 60px 110px -60px rgba(0,0,0,.95);overflow:hidden}
+.call-bar{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);font:500 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.call-bar .rec{width:7px;height:7px;border-radius:50%;background:var(--copper);flex:none;animation:blink 1.6s ease-in-out infinite}
+.call-bar .biz{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.call-bar .when{margin-left:auto;color:var(--ink-2);white-space:nowrap}
+.call-body{padding:18px;display:grid;gap:16px}
+.caller{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 14px;align-items:center}
+.ring{position:relative;width:46px;height:46px;border-radius:50%;background:var(--navy-3);display:grid;place-items:center}
+.ring svg{width:20px;height:20px;fill:var(--ink)}
+.ring::before,.ring::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--copper);opacity:0}
+.call[data-state="ringing"] .ring::before{animation:ripple 1.4s ease-out infinite}
+.call[data-state="ringing"] .ring::after{animation:ripple 1.4s .7s ease-out infinite}
+.num{font:500 17px/1.25 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.where{font-size:13px;color:var(--ink-3)}
+.status{grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line-2);font:500 12px/1 var(--f-mono);color:var(--ink-2);white-space:nowrap}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.call[data-state="ringing"] .status .dot{background:var(--copper);animation:blink .6s ease-in-out infinite}
+.status .t{color:var(--ink);font-variant-numeric:tabular-nums}
+@container (min-width:430px){.caller{grid-template-columns:auto minmax(0,1fr) auto}.status{grid-column:auto}}
+.wave{display:flex;align-items:center;gap:3px;height:30px}
+.wave i{flex:1;height:100%;border-radius:2px;background:var(--ink-3);opacity:.3;transform:scaleY(var(--h,.4));transition:background-color .3s,opacity .3s}
+.call.live .wave i{background:var(--copper);opacity:.85;animation:wv var(--d,500ms) ease-in-out infinite alternate}
+.transcript{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.msg{display:grid;gap:6px;justify-items:start}
+.who{font:500 10.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.msg.ai .who{color:var(--copper)}
+.msg p{font-size:15px;line-height:1.45;padding:10px 14px;border-radius:12px;background:var(--navy-3);color:var(--ink);max-width:94%}
+.msg.ai p{background:transparent;border:1px solid var(--copper-line)}
+.booked{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--ok-bg);border:1px solid var(--ok-line)}
+.ck{width:26px;height:26px;border-radius:50%;background:var(--ok);display:grid;place-items:center;flex:none}
+.ck svg{width:14px;height:14px;fill:none;stroke:var(--navy);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.booked b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.booked div>span{display:block;font:500 12px/1.4 var(--f-mono);color:var(--ink-2)}
+.owner{display:grid;gap:6px;padding:12px 14px;border-radius:12px;border:1px dashed var(--line-2)}
+.owner .who{display:flex;justify-content:space-between;gap:10px}
+.owner p{font-size:14px;line-height:1.45;color:var(--ink-2)}
+.beat{transition:opacity .5s ease,transform .5s ease}
+.call.play .beat:not(.on){opacity:0;transform:translateY(8px)}
+.call.fade .beat{opacity:0;transition-duration:.35s}
+
+/* Proof strip */
+.strip{border-block:1px solid var(--line)}
+.strip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.strip-grid>div{padding:26px 0;display:grid;gap:6px}
+.strip-grid>div:nth-child(odd){padding-right:16px}
+.strip-grid>div:nth-child(n+3){border-top:1px solid var(--line)}
+.strip b{font-family:var(--f-display);font-weight:700;font-stretch:112%;font-size:clamp(26px,2.8vw,36px);line-height:1;letter-spacing:-.03em}
+.strip span{font-size:14px;color:var(--ink-2)}
+@media (min-width:860px){
+  .strip-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .strip-grid>div{padding:30px 24px}
+  .strip-grid>div:first-child{padding-left:0}
+  .strip-grid>div:nth-child(n+3){border-top:0}
+  .strip-grid>div+div{border-left:1px solid var(--line)}
+}
+
+/* Leaks */
+.leaks{display:grid;gap:clamp(36px,3vw,44px);margin-top:clamp(48px,6vw,80px)}
+@media (min-width:880px){.leaks{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.leak{border-top:1px solid var(--line-2);padding-top:24px;display:grid;gap:14px;align-content:start}
+.leak .tag{font:500 12px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--copper)}
+.stat{display:flex;align-items:baseline;gap:.06em;font-family:var(--f-display);font-weight:700;font-stretch:116%;line-height:.86;letter-spacing:-.045em}
+.stat b{font-size:clamp(76px,8.6vw,124px);font-weight:700;font-variant-numeric:tabular-nums}
+.stat small{font-size:clamp(28px,3vw,44px);font-weight:600;color:var(--ink-2);letter-spacing:-.02em}
+.leak h3{font-size:20px;line-height:1.3;font-weight:600;font-stretch:100%;letter-spacing:-.01em}
+.leak p{color:var(--ink-2);font-size:16px}
+.closer{margin-top:clamp(56px,7vw,96px);display:grid;gap:28px}
+.closer>p{font-family:var(--f-display);font-size:clamp(22px,2.3vw,30px);line-height:1.3;font-weight:500;font-stretch:104%;letter-spacing:-.015em;max-width:34ch}
+
+/* Calculator */
+.calc{display:grid;border:1px solid var(--line-2);border-radius:22px;background:var(--navy-2);overflow:hidden}
+@media (min-width:920px){.calc{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)}}
+.calc-in,.calc-out{padding:clamp(24px,3.4vw,44px);display:grid;gap:30px;min-width:0}
+.calc-in h3{font-size:clamp(22px,2vw,26px);line-height:1.2;font-stretch:106%}
+.calc-out{background:var(--navy-3);border-top:1px solid var(--line);align-content:space-between}
+@media (min-width:920px){.calc-out{border-top:0;border-left:1px solid var(--line)}}
+.slider{display:grid;gap:14px}
+.slider-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.slider label{font-weight:600;font-size:16px;line-height:1.3}
+.slider .hint{display:block;font-size:13px;color:var(--ink-3);font-weight:400;margin-top:2px}
+.slider output{font:500 19px/1 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:transparent;cursor:pointer;--p:50%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--copper) var(--p),var(--line-2) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-10px;border-radius:50%;background:var(--ink);border:5px solid var(--copper);box-shadow:0 0 0 6px var(--copper-glow);transition:box-shadow .2s}
+input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 10px var(--copper-glow)}
+input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:var(--line-2)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:4px;background:var(--copper)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--ink);border:5px solid var(--copper);box-shadow:0 0 0 6px var(--copper-glow)}
+input[type=range]:focus-visible{outline:none}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--navy-2),0 0 0 6px var(--copper-2)}
+.out-k{font:500 12px/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.money{font-family:var(--f-display);font-weight:750;font-stretch:112%;font-size:clamp(46px,5.4vw,80px);line-height:.95;letter-spacing:-.04em;color:var(--copper);font-variant-numeric:tabular-nums;margin-top:12px;overflow-wrap:anywhere}
+.money small{font-size:.32em;font-weight:600;letter-spacing:-.01em;color:var(--ink-2);margin-left:.2em}
+.out-year{margin-top:14px;font-size:17px;color:var(--ink-2)}
+.out-year b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.out-jobs{display:flex;gap:12px;align-items:baseline;padding-top:18px;border-top:1px solid var(--line);font-size:15px;color:var(--ink-2)}
+.out-jobs b{font:500 22px/1 var(--f-mono);color:var(--ink)}
+.calc-foot{display:grid;gap:18px}
+.fineprint{font-size:13px;line-height:1.5;color:var(--ink-3)}
+
+/* How it works */
+.steps{list-style:none;margin:clamp(48px,6vw,80px) 0 0;padding:0}
+.srow{display:grid;gap:22px 48px;padding-block:clamp(36px,4.4vw,60px);border-top:1px solid var(--line)}
+.srow:last-child{border-bottom:1px solid var(--line)}
+@media (min-width:940px){.srow{grid-template-columns:150px minmax(0,1fr) minmax(0,1.08fr);align-items:start}}
+.sn{display:flex;align-items:baseline;gap:16px}
+@media (min-width:940px){.sn{flex-direction:column;gap:14px}}
+.sn .n{font-family:var(--f-display);font-weight:700;font-stretch:122%;font-size:60px;line-height:.8;color:var(--copper);letter-spacing:-.04em}
+.sn .t{font:500 12px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.scopy{display:grid;gap:14px;align-content:start;min-width:0}
+.scopy p{color:var(--ink-2);max-width:46ch}
+.panel{border:1px solid var(--line-2);border-radius:16px;background:var(--navy-2);padding:8px 22px;min-width:0}
+.panel-k{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0 12px;font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.rows{list-style:none;margin:0;padding:0}
+.rows li{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;padding:13px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
+.rows li span{font:500 12px/1.6 var(--f-mono);color:var(--copper);white-space:nowrap}
+.rows.q li{grid-template-columns:30px minmax(0,1fr)}
+.tag-sample{font:500 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line-2);padding:5px 7px;border-radius:6px}
+.report{padding:8px 22px 22px}
+.report-month{font-family:var(--f-display);font-weight:600;font-stretch:108%;font-size:20px;letter-spacing:-.01em;padding-bottom:16px}
+.report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0;border-top:1px solid var(--line)}
+.report-grid>div{padding:16px 0;border-bottom:1px solid var(--line)}
+.report-grid>div:nth-child(odd){padding-right:14px;border-right:1px solid var(--line)}
+.report-grid>div:nth-child(even){padding-left:16px}
+.report-grid dt{font-size:13px;color:var(--ink-2)}
+.report-grid dd{margin:6px 0 0;font-family:var(--f-display);font-weight:700;font-stretch:110%;font-size:30px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.report-grid dd.sub{margin-top:6px;font:500 11px/1.3 var(--f-mono);letter-spacing:.04em;color:var(--ink-3)}
+.report-total{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px 16px;padding-top:18px}
+.report-total span{font-size:14px;color:var(--ink-2)}
+.report-total b{font-family:var(--f-display);font-weight:750;font-stretch:112%;font-size:34px;line-height:1;letter-spacing:-.035em;color:var(--copper)}
+
+/* System */
+.sys{display:grid;gap:clamp(72px,9vw,128px);margin-top:clamp(56px,7vw,96px)}
+.comp{display:grid;gap:36px 72px;align-items:center}
+@media (min-width:960px){.comp{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.comp.flip .vis{order:-1}}
+.comp-copy{display:grid;gap:18px;align-content:start;max-width:520px;min-width:0}
+.comp-name{font:500 12px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--copper)}
+.comp-copy>p{color:var(--ink-2)}
+.specs{list-style:none;margin:6px 0 0;padding:0;display:grid;border-top:1px solid var(--line)}
+.specs li{padding:12px 0 12px 28px;border-bottom:1px solid var(--line);font-size:15px;position:relative}
+.specs li::before{content:"";position:absolute;left:3px;top:19px;width:11px;height:6px;border-left:2px solid var(--copper);border-bottom:2px solid var(--copper);transform:rotate(-45deg)}
+.vis{position:relative;border:1px solid var(--line-2);border-radius:20px;background:var(--navy-2);padding:clamp(20px,2.6vw,32px);min-width:0;overflow:hidden}
+.vis-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+.cov-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin-bottom:6px}
+.cov-head b{font-family:var(--f-display);font-weight:750;font-stretch:114%;font-size:clamp(44px,5vw,64px);line-height:.9;letter-spacing:-.045em;color:var(--copper)}
+.cov-head span{font-family:var(--f-display);font-size:22px;font-weight:600;color:var(--ink-2);letter-spacing:-.02em}
+.cov-sub{font-size:15px;color:var(--ink-2);margin-bottom:26px}
+.cov{display:grid;gap:10px}
+.cov-row{display:grid;grid-template-columns:70px minmax(0,1fr);align-items:center;gap:12px}
+.cov-k{font:500 10.5px/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.cov-bar{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:2px}
+@media (min-width:600px){.cov-bar{gap:3px}}
+.cov-bar i{height:34px;border-radius:3px;background:var(--copper);transform-origin:bottom}
+.cov-bar i.o{background:repeating-linear-gradient(135deg,var(--copper-line) 0 2px,transparent 2px 6px),var(--navy-3)}
+.cov.armed .cov-bar i{transform:scaleY(.12);opacity:.2}
+.cov.armed.go .cov-bar i{transform:none;opacity:1;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s;transition-delay:calc(var(--i,0)*18ms)}
+.cov-axis{position:relative;height:14px;margin-left:82px;font:500 10px/1 var(--f-mono);color:var(--ink-3)}
+.cov-axis span{position:absolute;top:0;transform:translateX(-50%)}
+.cov-axis span:first-child{transform:none}
+.cov-axis span:last-child{transform:translateX(-100%)}
+.cov-legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:22px;font-size:13px;color:var(--ink-2)}
+.cov-legend span{display:inline-flex;align-items:center;gap:8px}
+.cov-legend i{width:12px;height:12px;border-radius:3px;background:var(--copper);flex:none}
+.cov-legend i.o{background:repeating-linear-gradient(135deg,var(--copper-line) 0 2px,transparent 2px 5px),var(--navy-3);outline:1px solid var(--line-2)}
+.cov-note{margin-top:14px;font-size:12px;color:var(--ink-3)}
+
+.thread{display:grid;gap:12px}
+.lead-in{display:grid;gap:6px;border:1px dashed var(--line-2);border-radius:12px;padding:12px 14px}
+.lead-in .who{display:flex;justify-content:space-between;gap:10px}
+.lead-in p{font-size:14px;color:var(--ink-2);line-height:1.45}
+.bub{max-width:88%;padding:11px 14px;border-radius:16px;font-size:15px;line-height:1.45}
+.bub.out{justify-self:end;background:var(--copper);color:var(--copper-ink);border-bottom-right-radius:5px}
+.bub.in{justify-self:start;background:var(--navy-3);color:var(--ink);border-bottom-left-radius:5px}
+.lnk{font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.meta{justify-self:end;font:500 11px/1 var(--f-mono);color:var(--ink-3)}
+.meta b{color:var(--copper);font-weight:500}
+.timer{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.timer b{font:500 clamp(40px,4.4vw,54px)/1 var(--f-mono);color:var(--copper);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.timer span{font-size:15px;color:var(--ink-2)}
+.sms.armed .st{opacity:0;transform:translateY(8px)}
+.sms .st{transition:opacity .45s,transform .45s}
+.sms.armed .st.on{opacity:1;transform:none}
+
+.stars{display:flex;gap:3px}
+.stars svg{width:18px;height:18px;fill:var(--copper);transition:opacity .3s,transform .3s}
+.rev.armed .stars svg{opacity:.18;transform:scale(.8)}
+.rev.armed .stars svg.on{opacity:1;transform:none}
+.rev-card{display:grid;gap:10px;padding:16px;border-radius:14px;background:var(--navy-3)}
+.rev-card p{font-size:15px;line-height:1.5}
+.rev-card span{font-size:13px;color:var(--ink-3)}
+.rating{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+.rating b{font-family:var(--f-display);font-weight:700;font-stretch:110%;font-size:30px;line-height:1;color:var(--ink);letter-spacing:-.03em}
+.rating .up{margin-left:auto;font:500 12px/1 var(--f-mono);color:var(--ok);padding:6px 9px;border:1px solid var(--ok-line);border-radius:999px;background:var(--ok-bg)}
+
+/* Kinetic band */
+@property --fp{syntax:"<percentage>";inherits:false;initial-value:100%}
+.band{padding-block:clamp(84px,11vw,160px);border-block:1px solid var(--line)}
+.band-text{margin:0;display:grid;gap:.06em;font-family:var(--f-display);font-weight:750;font-stretch:110%;font-size:clamp(44px,7.2vw,96px);line-height:.98;letter-spacing:-.04em;text-wrap:balance}
+.band-text span{display:block}
+.band-text span:last-child{color:var(--copper)}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .band-text span{--fill:var(--ink);color:transparent;-webkit-text-fill-color:transparent;
+      background:linear-gradient(var(--fill),var(--fill)) 0 0/var(--fp) 100% no-repeat,linear-gradient(var(--ink-faint),var(--ink-faint));
+      -webkit-background-clip:text;background-clip:text;animation:fill linear both;animation-timeline:view();animation-range:entry 60% cover 50%}
+    .band-text span:last-child{--fill:var(--copper);animation-range:entry 90% cover 62%}
+  }
+}
+@keyframes fill{from{--fp:0%}to{--fp:100%}}
+
+/* Pricing (paper) */
+.paper{background:var(--paper);color:var(--paper-ink)}
+.paper .label{color:var(--paper-muted)}
+.paper .lead{color:var(--paper-muted)}
+.paper :focus-visible{outline-color:var(--copper-d)}
+.plan{display:grid;margin-top:clamp(44px,5vw,72px);border:1px solid var(--paper-line);border-radius:22px;background:var(--paper-card);overflow:hidden}
+@media (min-width:980px){.plan{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr)}}
+.plan-price{padding:clamp(28px,3.6vw,48px);display:grid;gap:24px;align-content:start;border-bottom:1px solid var(--paper-line);min-width:0}
+@media (min-width:980px){.plan-price{border-bottom:0;border-right:1px solid var(--paper-line)}}
+.plan-name{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;white-space:nowrap;font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--paper-muted)}
+.price{display:grid;gap:6px}
+.price .amt{font-family:var(--f-display);font-weight:750;font-stretch:114%;font-size:clamp(54px,6vw,84px);line-height:.9;letter-spacing:-.045em}
+.price .per{font-size:16px;color:var(--paper-muted)}
+.price-plus{display:flex;align-items:center;gap:12px;font:500 12px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--paper-muted)}
+.price-plus::after{content:"";flex:1;height:1px;background:var(--paper-line)}
+.terms{font-weight:600;font-size:16px}
+.guar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;padding:18px;border:1.5px solid var(--paper-ink);border-radius:14px}
+.guar svg{width:28px;height:28px;fill:none;stroke:var(--copper-d);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.guar b{display:block;font-family:var(--f-display);font-weight:700;font-stretch:108%;font-size:17px;letter-spacing:-.01em}
+.guar p{margin-top:4px;font-size:15px;line-height:1.45;color:var(--paper-muted)}
+.breakeven{font-size:15px;line-height:1.5;color:var(--paper-muted)}
+.breakeven b{color:var(--paper-ink);font-weight:600;font-variant-numeric:tabular-nums}
+.plan-incl{padding:clamp(28px,3.6vw,48px);display:grid;gap:36px 40px;align-content:start;min-width:0}
+@media (min-width:680px){.plan-incl{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.incl.you{grid-column:1/-1}}
+.incl h3{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--paper-line);font-size:19px;font-stretch:108%;letter-spacing:-.015em}
+.incl h3 span{font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--copper-d);white-space:nowrap}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.checks li{position:relative;padding-left:26px;font-size:15px;line-height:1.45}
+.checks li::before{content:"";position:absolute;left:2px;top:.4em;width:11px;height:6px;border-left:2px solid var(--copper-d);border-bottom:2px solid var(--copper-d);transform:rotate(-45deg)}
+.incl.you{background:var(--paper-2);border-radius:14px;padding:22px 24px}
+.incl.you h3{border-bottom-color:var(--paper-line)}
+.you-grid{display:grid;gap:14px 28px}
+@media (min-width:680px){.you-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:end}}
+.you-note{font-family:var(--f-display);font-weight:600;font-stretch:106%;font-size:18px;line-height:1.3;letter-spacing:-.01em}
+
+/* Website add-on */
+.addon{margin-top:24px;display:grid;gap:40px 56px;align-items:center;background:var(--navy);color:var(--ink);border-radius:22px;padding:clamp(28px,4vw,56px);overflow:hidden}
+@media (min-width:980px){.addon{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+.addon-copy{display:grid;gap:20px;min-width:0}
+.addon .comp-name{display:flex;align-items:center;gap:10px}
+.addon-copy>p{color:var(--ink-2);max-width:52ch}
+.addon .specs{grid-template-columns:1fr}
+@media (min-width:620px){.addon .specs{grid-template-columns:1fr 1fr;column-gap:28px}}
+.addon-foot{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;padding-top:6px}
+.addon-price{display:grid;gap:4px}
+.addon-price b{font-family:var(--f-display);font-weight:750;font-stretch:112%;font-size:34px;line-height:1;letter-spacing:-.035em}
+.addon-price span{font-size:14px;color:var(--ink-2)}
+
+.phone{justify-self:center;width:min(280px,100%);border-radius:38px;padding:9px;background:var(--navy-0);border:1px solid var(--line-2);box-shadow:0 50px 90px -50px rgba(0,0,0,.95)}
+.screen{border-radius:30px;overflow:hidden;background:var(--paper);color:var(--paper-ink);display:grid}
+.scr-top{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 12px;font-family:var(--f-display);font-weight:700;font-stretch:110%;font-size:13px;letter-spacing:-.01em}
+.scr-top i{width:18px;height:10px;border-block:2px solid var(--paper-ink);position:relative}
+.scr-top i::after{content:"";position:absolute;left:0;right:0;top:2px;height:2px;background:var(--paper-ink)}
+.scr-hero{padding:6px 18px 18px;display:grid;gap:12px}
+.scr-hero h4{font-size:24px;line-height:1;font-stretch:112%;font-weight:750;letter-spacing:-.04em}
+.scr-stars{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--paper-muted)}
+.scr-stars .stars svg{width:12px;height:12px;fill:var(--copper-d)}
+.scr-btns{display:grid;gap:8px}
+.scr-btns span{display:flex;justify-content:center;align-items:center;min-height:40px;border-radius:9px;font-size:13px;font-weight:600}
+.scr-btns .a{background:var(--paper-ink);color:var(--paper)}
+.scr-btns .b{border:1.5px solid var(--paper-ink)}
+.scr-toast{margin:0 12px 14px;padding:10px 12px;border-radius:12px;background:var(--navy);color:var(--ink);display:grid;gap:3px}
+.scr-toast span{font:500 9.5px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--copper)}
+.scr-toast p{font-size:12px;line-height:1.35}
+.scr-band{height:58px;margin:0 12px 12px;border-radius:12px;background:repeating-linear-gradient(135deg,var(--paper-2) 0 6px,var(--paper) 6px 12px)}
+
+/* FAQ */
+.faq{display:grid;gap:40px 72px}
+@media (min-width:960px){.faq{grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr)}.faq-head{position:sticky;top:120px;align-self:start}}
+.faq-head{display:grid;gap:20px}
+.faq-head p{color:var(--ink-2);max-width:36ch}
+.qa{border-top:1px solid var(--line-2)}
+.qa:last-child{border-bottom:1px solid var(--line-2)}
+.qa summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:24px 0;font-family:var(--f-display);font-weight:600;font-stretch:106%;font-size:clamp(18px,1.7vw,22px);line-height:1.3;letter-spacing:-.015em;transition:color .2s}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary:hover{color:var(--copper-2)}
+.qa summary i{position:relative;flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-2);transition:border-color .2s,background-color .2s}
+.qa summary i::before,.qa summary i::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:1.5px;background:var(--ink);transform:translate(-50%,-50%)}
+.qa summary i::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .25s}
+.qa[open] summary i{border-color:var(--copper);background:var(--copper)}
+.qa[open] summary i::before,.qa[open] summary i::after{background:var(--copper-ink)}
+.qa[open] summary i::after{transform:translate(-50%,-50%) rotate(0deg)}
+.qa .a{padding:0 54px 26px 0;color:var(--ink-2);max-width:62ch}
+
+/* Audit form */
+.audit{border-top:1px solid var(--line);position:relative;isolation:isolate;overflow:clip}
+.audit::before{content:"";position:absolute;right:-10%;top:10%;width:60%;height:70%;z-index:-1;background:radial-gradient(closest-side,var(--copper-glow),transparent 75%);pointer-events:none}
+.audit-grid{display:grid;gap:56px 80px;align-items:start}
+@media (min-width:1000px){.audit-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.audit-copy{display:grid;gap:24px;min-width:0}
+.ticks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:14px}
+.ticks li{display:flex;gap:12px;align-items:flex-start;font-size:16px}
+.ticks svg{width:18px;height:18px;margin-top:3px;flex:none;color:var(--copper)}
+.form-card{background:var(--navy-2);border:1px solid var(--line-2);border-radius:22px;padding:clamp(24px,3.2vw,40px);box-shadow:0 60px 120px -70px rgba(0,0,0,.95);min-width:0}
+.form{display:grid;gap:20px}
+.form-k{display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.form-row{display:grid;gap:20px}
+@media (min-width:560px){.form-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.field{display:grid;gap:8px;min-width:0}
+.field label{font-size:14px;font-weight:600}
+.field input,.field select{width:100%;min-height:54px;padding:0 16px;border-radius:10px;border:1px solid var(--line-2);background:var(--navy);color:var(--ink);font:400 16px/1.2 var(--f-body);transition:border-color .2s,box-shadow .2s}
+.field input::placeholder{color:var(--ink-3)}
+.field select{-webkit-appearance:none;appearance:none;padding-right:44px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23AEB7C7' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
+.field select:invalid{color:var(--ink-3)}
+.field select option{color:var(--ink);background:var(--navy-2)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--copper);box-shadow:0 0 0 4px var(--copper-glow)}
+.field [aria-invalid="true"]{border-color:var(--err)}
+.err{font-size:13px;color:var(--err)}
+.err:empty{display:none}
+.check{display:flex;gap:12px;align-items:center;font-size:15px;color:var(--ink-2);cursor:pointer}
+.check input{width:20px;height:20px;margin:0;accent-color:var(--copper);flex:none}
+.hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.btn-lg{min-height:60px;font-size:17px}
+.btn[disabled]{opacity:.65;cursor:progress}
+.fine{font-size:13px;color:var(--ink-3);text-align:center}
+.form-error{padding:12px 14px;border-radius:10px;border:1px solid var(--err);color:var(--ink);font-size:14px}
+.success{display:grid;gap:18px;outline:none}
+.success .ck{width:48px;height:48px}
+.success .ck svg{width:22px;height:22px}
+.success p{color:var(--ink-2)}
+
+/* Footer */
+.foot{padding-block:64px 36px;color:var(--ink-2);font-size:14px;border-top:1px solid var(--line)}
+.foot-grid{display:grid;gap:40px}
+@media (min-width:880px){.foot-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,1.1fr) minmax(0,.8fr)}}
+.foot-brand{display:grid;gap:14px;align-content:start}
+.foot-brand p{font-family:var(--f-display);font-size:18px;font-weight:600;font-stretch:106%;color:var(--ink);letter-spacing:-.01em;max-width:24ch;line-height:1.3}
+.foot h4{font:500 11px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+.areas{display:flex;flex-wrap:wrap;gap:8px 16px}
+.contact{display:grid;gap:10px}
+.contact a{text-decoration:none;color:var(--ink)}
+.contact a:hover{color:var(--copper-2)}
+.foot-nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:6px}
+.foot-nav a{text-decoration:none}
+.foot-nav a:hover{color:var(--ink)}
+.foot-bottom{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;font-size:13px;color:var(--ink-3)}
+
+/* Motion */
+@keyframes ripple{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.9);opacity:0}}
+@keyframes blink{50%{opacity:.25}}
+@keyframes wv{from{transform:scaleY(calc(var(--h,.4)*.25))}to{transform:scaleY(var(--h,.4))}}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes rv{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){
+  .load{animation:rise .9s cubic-bezier(.2,.7,.1,1) both;animation-delay:calc(var(--d,0)*90ms)}
+  @supports (animation-timeline:view()){
+    .rv{animation:rv linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="wrap head-in">
+    <a class="brand" href="#top" aria-label="Copperline, back to top">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M24.49 7.51A12 12 0 1 0 24.49 24.49"/><path d="M20.24 11.76A6 6 0 1 0 20.24 20.24"/><circle cx="16" cy="16" r="2.1"/></svg>
+      Copperline
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#system">The system</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary btn-sm head-cta" href="#audit"><span class="cta-long">Get my free audit</span><span class="cta-short">Free audit</span></a>
+  </div>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow load" style="--d:0"><span class="pin" aria-hidden="true"></span>Houston metro<span aria-hidden="true">·</span>HVAC<span aria-hidden="true">·</span>Plumbing<span aria-hidden="true">·</span>Electrical</div>
+      <h1 class="h1">
+        <span class="l load" style="--d:1">Your business is losing jobs to voicemail.</span>
+        <span class="l accent load" style="--d:2">We stop it.</span>
+      </h1>
+      <p class="lead load" style="--d:3">We install a system that answers every call in about 10 seconds, texts back every web lead in under a minute, and books the job straight onto your calendar. Nights, weekends and holidays included.</p>
+      <div class="ctas load" style="--d:4">
+        <a class="btn btn-primary" href="#audit">Get my free 48-Hour Leak Audit <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <ul class="trust load" style="--d:5">
+        <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Free audit</li>
+        <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Your number in 48 hours</li>
+        <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Month-to-month after install</li>
+      </ul>
+    </div>
+
+    <div class="hero-vis load" style="--d:3">
+      <!-- Sample call. Hartwell Air & Plumbing is a made-up shop. -->
+      <article class="call" id="call" data-state="answered" aria-label="Sample after-hours call, answered and booked">
+        <div class="call-bar"><span class="rec" aria-hidden="true"></span><span class="biz">Sample call · Hartwell Air &amp; Plumbing</span><span class="when">Tue 2:14 AM</span></div>
+        <div class="call-body">
+          <div class="caller">
+            <div class="ring" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div>
+            <div><div class="num">(281) 555-0142</div><div class="where">Katy, TX · New customer</div></div>
+            <div class="status"><span class="dot" aria-hidden="true"></span><span class="st-label">Answered in</span> <span class="t">0:09</span></div>
+          </div>
+          <div class="wave" aria-hidden="true"></div>
+          <ol class="transcript">
+            <li class="msg beat"><span class="who">Caller</span><p>Our AC just quit. It's 84 in the house and we've got a newborn.</p></li>
+            <li class="msg ai beat"><span class="who">AI receptionist</span><p>I'm sorry, that's rough. I can have a tech at your door at 8 this morning. Does that work?</p></li>
+            <li class="msg beat"><span class="who">Caller</span><p>Yes. Thank you.</p></li>
+          </ol>
+          <div class="booked beat">
+            <span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg></span>
+            <div><b>Booked on your calendar</b><span>Tue 8:00 AM · AC not cooling · Katy</span></div>
+          </div>
+          <div class="owner beat">
+            <span class="who"><span>Texted to owner</span><span>2:17 AM</span></span>
+            <p>New job: AC not cooling, Tue 8:00 AM, Katy. Newborn in the home, marked urgent.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF STRIP: product facts, not client claims -->
+<div class="strip">
+  <div class="wrap strip-grid">
+    <div><b>~10 sec</b><span>to answer every call</span></div>
+    <div><b>&lt; 60 sec</b><span>to text back every web lead</span></div>
+    <div><b>24/7/365</b><span>nights, weekends, holidays</span></div>
+    <div><b>1 week</b><span>from signup to live</span></div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="sec" id="leaks">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="label">Where the money goes</span>
+      <h2 class="h2">Three leaks. Every shop has them.</h2>
+      <p class="lead">None of this is about how good your work is. It's about who picks up first.</p>
+    </div>
+
+    <div class="leaks">
+      <article class="leak rv">
+        <span class="tag">After hours</span>
+        <div class="stat"><b data-count="80">80</b><small>%</small></div>
+        <h3>of callers who hit voicemail never call back.</h3>
+        <p>They hang up and call the next shop on Google. After 5 PM, on weekends, and whenever your techs are on a job, that's who gets the work.</p>
+      </article>
+      <article class="leak rv">
+        <span class="tag">Web leads</span>
+        <div class="stat"><b data-count="78">78</b><small>%</small></div>
+        <h3>of jobs go to whoever responds first.</h3>
+        <p>A form fill that sits in the inbox until morning is already booked with someone else. Most shops take hours to reply. The job goes in minutes.</p>
+      </article>
+      <article class="leak rv">
+        <span class="tag">Follow-up</span>
+        <div class="stat"><b data-count="5">5</b><small>min</small></div>
+        <h3>is about how long a new lead stays warm.</h3>
+        <p>After that, your odds of reaching them drop fast. One reply the next day isn't follow-up. Speed is the whole game.</p>
+      </article>
+    </div>
+
+    <div class="closer">
+      <p class="rv">For a typical shop, that's tens of thousands a year walking out the door. <span class="accent">The free audit puts your exact number on it.</span></p>
+
+      <div class="calc rv" id="calc">
+        <div class="calc-in">
+          <div class="sec-head" style="gap:10px">
+            <span class="label">Ballpark it</span>
+            <h3>What is voicemail costing you right now?</h3>
+          </div>
+          <div class="slider">
+            <div class="slider-top"><label for="c-calls">Calls you miss in a week<span class="hint">After hours, weekends, busy lines</span></label><output id="o-calls" for="c-calls">8</output></div>
+            <input type="range" id="c-calls" min="1" max="40" step="1" value="8">
+          </div>
+          <div class="slider">
+            <div class="slider-top"><label for="c-ticket">Average job ticket<span class="hint">Service calls, not installs</span></label><output id="o-ticket" for="c-ticket">$400</output></div>
+            <input type="range" id="c-ticket" min="150" max="2500" step="25" value="400">
+          </div>
+          <div class="slider">
+            <div class="slider-top"><label for="c-rate">Missed callers who'd have booked<span class="hint">Your normal close rate on the phone</span></label><output id="o-rate" for="c-rate">50%</output></div>
+            <input type="range" id="c-rate" min="20" max="90" step="5" value="50">
+          </div>
+        </div>
+        <div class="calc-out">
+          <div>
+            <div class="out-k">Walking out the door</div>
+            <div class="money" aria-live="polite"><span id="o-month">$5,550</span><small>/ month</small></div>
+            <p class="out-year">That's <b id="o-year">$66,560</b> a year.</p>
+          </div>
+          <div class="calc-foot">
+            <p class="out-jobs"><b id="o-jobs">14</b> jobs a month going to another shop</p>
+            <a class="btn btn-primary btn-block" href="#audit">Get my exact number <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+            <p class="fineprint">Assumes 80% of callers who reach voicemail don't call back. Counts phone calls only, so slow web-lead replies come on top. Your audit uses your real numbers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec" id="how" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="label">How it works</span>
+      <h2 class="h2">Three steps. You do almost none of them.</h2>
+    </div>
+
+    <ol class="steps">
+      <li class="srow rv">
+        <div class="sn"><span class="n">1</span><span class="t">48 hours</span></div>
+        <div class="scopy">
+          <h3 class="h3">Free Leak Audit</h3>
+          <p>Answer 5 quick questions about your calls and leads. Within 48 hours you get a one-page Leak Report with your monthly and yearly loss in dollars.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-k"><span>The 5 questions</span><span>About 3 min</span></div>
+          <ol class="rows q">
+            <li><span>01</span>How many calls do you get in a week?</li>
+            <li><span>02</span>How many of them go to voicemail?</li>
+            <li><span>03</span>What's your average ticket?</li>
+            <li><span>04</span>How fast do you reply to web leads today?</li>
+            <li><span>05</span>Who answers after hours?</li>
+          </ol>
+        </div>
+      </li>
+      <li class="srow rv">
+        <div class="sn"><span class="n">2</span><span class="t">Week 1</span></div>
+        <div class="scopy">
+          <h3 class="h3">One-week install</h3>
+          <p>We connect your phones and lead inbox, set the system up to book jobs your way, and test it live with you before anything goes on.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-k"><span>Install schedule</span><span>7 days</span></div>
+          <ul class="rows">
+            <li><span>Day 1–2</span>Phones, lead inbox and calendar connected</li>
+            <li><span>Day 3–4</span>Receptionist set up: greeting, booking rules, after-hours routing, escalation to you</li>
+            <li><span>Day 5–6</span>Speed-to-lead built: instant text, booking link, owner alert, follow-up for no-replies</li>
+            <li><span>Day 7</span>Review requests switched on, then a full live test with you</li>
+          </ul>
+        </div>
+      </li>
+      <li class="srow rv">
+        <div class="sn"><span class="n">3</span><span class="t">Every month</span></div>
+        <div class="scopy">
+          <h3 class="h3">The leaks stop</h3>
+          <p>Every call answered, every lead followed up. Each month you get a one-page report showing exactly what the system caught for you.</p>
+        </div>
+        <div class="panel report">
+          <div class="panel-k"><span>Monthly report</span><span class="tag-sample">Sample</span></div>
+          <div class="report-month">September 2026</div>
+          <dl class="report-grid">
+            <div><dt>Calls answered</dt><dd>186</dd><dd class="sub">71 after hours</dd></div>
+            <div><dt>Leads texted back</dt><dd>52</dd><dd class="sub">Avg reply 38 sec</dd></div>
+            <div><dt>Jobs booked</dt><dd>47</dd><dd class="sub">Calls + web leads</dd></div>
+            <div><dt>New reviews</dt><dd>19</dd><dd class="sub">Rating now 4.9</dd></div>
+          </dl>
+          <div class="report-total"><span>Estimated revenue captured</span><b>$18,330</b></div>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- THE SYSTEM -->
+<section class="sec" id="system" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="label">The system</span>
+      <h2 class="h2">What we install.</h2>
+      <p class="lead">Three pieces that work as one. You keep running jobs exactly the way you do now.</p>
+    </div>
+
+    <div class="sys">
+      <!-- 1. Receptionist -->
+      <div class="comp">
+        <div class="comp-copy rv">
+          <span class="comp-name">AI receptionist</span>
+          <h3 class="h3">Never miss another after-hours emergency call.</h3>
+          <p>Picks up in about 10 seconds, any hour. It knows your services and service area, books the job straight onto your calendar, and texts you the details. True emergencies can ring through to you or whoever's on call. You set the rules.</p>
+          <ul class="specs">
+            <li>Answers on the number you already have</li>
+            <li>Covers after hours, weekends and busy lines</li>
+            <li>Books to your calendar and texts you every job</li>
+          </ul>
+        </div>
+        <div class="vis rv">
+          <div class="vis-top"><span>Weekly coverage</span><span>Mon – Sun</span></div>
+          <div class="cov-head"><b>113</b><span>of 168 hours</span></div>
+          <p class="cov-sub">That's how long your office is closed each week. We answer every one of them.</p>
+          <div class="cov" id="cov" role="img" aria-label="Chart: Copperline answers all night and weekend hours, and catches overflow while your office is open from 7 AM to 6 PM on weekdays.">
+            <div class="cov-row"><span class="cov-k">Mon–Fri</span><div class="cov-bar"><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i></div></div>
+            <div class="cov-row"><span class="cov-k">Sat–Sun</span><div class="cov-bar"><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i></div></div>
+            <div class="cov-row"><span class="cov-k">Holidays</span><div class="cov-bar"><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i></div></div>
+            <div class="cov-axis" aria-hidden="true"><span style="left:0">12a</span><span style="left:25%">6a</span><span style="left:50%">12p</span><span style="left:75%">6p</span><span style="left:100%">12a</span></div>
+          </div>
+          <div class="cov-legend"><span><i></i>We answer</span><span><i class="o"></i>Your office answers, we catch the overflow</span></div>
+          <p class="cov-note">Based on a 7 AM to 6 PM weekday office.</p>
+        </div>
+      </div>
+
+      <!-- 2. Speed-to-lead -->
+      <div class="comp flip">
+        <div class="comp-copy rv">
+          <span class="comp-name">60-second speed-to-lead</span>
+          <h3 class="h3">Be the first shop to reply. Every time.</h3>
+          <p>Every web form and inquiry gets a text back in under 60 seconds with a link to book. If they don't answer, it follows up on its own, so the lead doesn't go cold overnight.</p>
+          <ul class="specs">
+            <li>Instant text from your business name</li>
+            <li>Booking link straight to your calendar</li>
+            <li>Automatic follow-up for no-replies</li>
+          </ul>
+        </div>
+        <div class="vis sms rv" id="sms">
+          <div class="vis-top"><span>New web lead · 9:42 PM</span><span class="tag-sample">Sample</span></div>
+          <div class="timer"><b id="sms-timer">0:41</b><span>from form to first text</span></div>
+          <div class="thread">
+            <div class="lead-in st"><span class="who"><span>Web form · Pearland</span><span>9:42:10 PM</span></span><p>"Water heater's leaking in the garage. Can someone look at it tomorrow?" Maria G.</p></div>
+            <div class="bub out st">Hi Maria, it's Hartwell Air &amp; Plumbing. Got your note about the water heater. We can be out tomorrow. Pick a time here: <span class="lnk">Book a time</span></div>
+            <div class="meta st">Sent 9:42:51 PM · <b>41 sec</b></div>
+            <div class="bub in st">10am works. Thank you!</div>
+            <div class="booked st">
+              <span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg></span>
+              <div><b>Booked</b><span>Wed 10:00 AM · Water heater · Pearland</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Reviews -->
+      <div class="comp">
+        <div class="comp-copy rv">
+          <span class="comp-name">Review engine</span>
+          <h3 class="h3">Turn finished jobs into five-star reviews.</h3>
+          <p>After each job, your customer gets a short, friendly text asking for a review. Your rating climbs on autopilot, and that rating is what wins you the next call.</p>
+          <ul class="specs">
+            <li>Sent automatically when a job closes</li>
+            <li>One tap to your Google review page</li>
+            <li>New reviews counted in your monthly report</li>
+          </ul>
+        </div>
+        <div class="vis rev rv" id="rev">
+          <div class="vis-top"><span>Job closed · 4:12 PM</span><span class="tag-sample">Sample</span></div>
+          <div class="thread">
+            <div class="bub out">Thanks for having us out today, Dan. If Luis took good care of you, would you leave us a quick review? It helps a small shop a lot. <span class="lnk">Leave a review</span></div>
+            <div class="rev-card">
+              <div class="stars" aria-label="5 out of 5 stars">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+              </div>
+              <p>"Luis showed up on time, found the bad capacitor in ten minutes and explained everything. AC's blowing cold again."</p>
+              <span>Dan R. · Google review</span>
+            </div>
+            <div class="rating"><span>Google rating</span><b>4.9</b><span class="mono" id="rev-count">215 reviews</span><span class="up">+1 today</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KINETIC BAND -->
+<section class="band" aria-label="Every call answered. Every lead followed up.">
+  <div class="wrap">
+    <p class="band-text" aria-hidden="true"><span>Every call answered.</span><span>Every lead followed up.</span></p>
+  </div>
+</section>
+
+<!-- PRICING + WHAT'S INCLUDED -->
+<section class="sec paper" id="pricing">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="label">Pricing</span>
+      <h2 class="h2">One plan. Everything included.</h2>
+      <p class="lead">Flat pricing. No commission math, no per-call fees, no surprises.</p>
+    </div>
+
+    <div class="plan rv">
+      <div class="plan-price">
+        <div class="plan-name"><span>Revenue Capture System</span><span>Houston metro</span></div>
+        <div class="price"><span class="amt">$2,000</span><span class="per">one-time install, live in about a week</span></div>
+        <div class="price-plus">then</div>
+        <div class="price"><span class="amt">$750</span><span class="per">per month, software and call minutes included</span></div>
+        <!-- TODO(Dom): open decision. Month-to-month vs. a 3-month minimum. Update this line and the FAQ answer to match. -->
+        <p class="terms">Month-to-month after install. If it's not working, you walk.</p>
+        <!-- TODO(Dom): guarantee is your call. Delete this whole .guar block to remove it. -->
+        <div class="guar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          <div><b>60-day payback guarantee</b><p>If the system doesn't pay for itself in booked jobs within 60 days, month 3 is free.</p></div>
+        </div>
+        <p class="breakeven" id="breakeven">At a <b>$400</b> average ticket, <b>2 booked jobs</b> a month covers the monthly fee.</p>
+        <a class="btn btn-dark" href="#audit">Start with the free audit <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      </div>
+
+      <div class="plan-incl">
+        <div class="incl">
+          <h3>The install <span>$2,000 · Week 1</span></h3>
+          <ul class="checks">
+            <li>Free Leak Audit and one-page report</li>
+            <li>AI receptionist set up for your services, area and booking rules</li>
+            <li>Connected to your existing number</li>
+            <li>After-hours, weekend and overflow routing</li>
+            <li>Emergency escalation to you or your on-call tech</li>
+            <li>Lead inbox connected with 60-second text-back</li>
+            <li>Automatic follow-up for leads who don't reply</li>
+            <li>Review request texts after every job</li>
+            <li>Live test with you before go-live</li>
+          </ul>
+        </div>
+        <div class="incl">
+          <h3>Every month <span>$750 · Ongoing</span></h3>
+          <ul class="checks">
+            <li>System monitored around the clock</li>
+            <li>Weekly review of how your calls were handled</li>
+            <li>One-page monthly report: calls, leads, jobs booked, revenue captured</li>
+            <li>Quarterly tune-up of scripts, routing and follow-up</li>
+            <li>All software and AI call minutes</li>
+          </ul>
+        </div>
+        <div class="incl you">
+          <h3>Your part <span>About an hour, total</span></h3>
+          <div class="you-grid">
+            <ul class="checks">
+              <li>Access to your phone system and lead inbox</li>
+              <li>Answers to the 5 audit questions</li>
+              <li>30 minutes for the live test</li>
+            </ul>
+            <p class="you-note">You change nothing about how you run jobs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEBSITE ADD-ON -->
+    <div class="addon rv" id="website">
+      <div class="addon-copy">
+        <span class="comp-name">Add-on · Website design</span>
+        <h3 class="h3">Need a website that books jobs, too?</h3>
+        <p>Most contractor sites were built to look good on a laptop, not to book a job from a phone at 9 PM. We'll design and build you a fast, mobile-first site that's wired into the system from day one.</p>
+        <ul class="specs">
+          <li>Designed around your trade and service area</li>
+          <li>Mobile-first and quick to load</li>
+          <li>Tap-to-call and 60-second text-back built in</li>
+          <li>Online booking straight to your calendar</li>
+          <li>Your Google reviews on display</li>
+          <li>Service-area pages for local search</li>
+        </ul>
+        <div class="addon-foot">
+          <!-- TODO(Dom): set the website add-on price. "From $1,500" is a placeholder, not a decision. -->
+          <div class="addon-price"><b>From $1,500</b><span>one-time, added to your install</span></div>
+          <a class="btn btn-primary" href="#audit">Ask about it on your audit</a>
+        </div>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="screen">
+          <div class="scr-top"><span>Hartwell Air &amp; Plumbing</span><i></i></div>
+          <div class="scr-hero">
+            <h4>AC out? We can be there today.</h4>
+            <div class="scr-stars"><span class="stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg></span>4.9 · 215 reviews</div>
+            <div class="scr-btns"><span class="a">Call now</span><span class="b">Book online</span></div>
+          </div>
+          <div class="scr-toast"><span>Texted back · 41 sec</span><p>Hi Maria, it's Hartwell. Pick a time that works for you.</p></div>
+          <div class="scr-band"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq">
+  <div class="wrap faq">
+    <div class="faq-head rv">
+      <span class="label">FAQ</span>
+      <h2 class="h2">Straight answers.</h2>
+      <p>Anything else, ask on your audit call. If it's not a fit, we'll tell you.</p>
+    </div>
+    <div class="faq-list rv">
+      <details class="qa" name="faq" open>
+        <summary>Will it sound like a robot?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>No. It sounds like a calm, friendly dispatcher who knows your services, and it picks up in 10 seconds. Next to voicemail, your customers won't think twice. You'll hear it yourself before it goes live.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>We already have someone answering phones.<i aria-hidden="true"></i></summary>
+        <div class="a"><p>During business hours, sure. This covers nights, weekends, lunch breaks and the times everyone's out on a job. That's where the calls are getting lost.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>What happens with a real emergency?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>You decide. Burst pipes and no-heat calls can ring straight through to you or your on-call tech. Everything else gets booked into the next open slot.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>What do you need from me?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>Access to your phone system and lead inbox, answers to 5 questions, and 30 minutes for testing. You change nothing about how you run jobs.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>Do I need a new phone number or new software?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>No. Customers keep calling the number they already know. We handle all the setup on our side.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>How fast is the install?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>About a week from signup.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>Is there a contract?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>Month-to-month after install. If it's not working, you walk.</p></div>
+      </details>
+      <details class="qa" name="faq">
+        <summary>Do you work with my trade?<i aria-hidden="true"></i></summary>
+        <div class="a"><p>We specialize in HVAC, plumbing and electrical contractors across Houston metro. In a related trade? Ask. We'll tell you straight if it's a fit.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA / AUDIT FORM -->
+<section class="sec audit" id="audit">
+  <div class="wrap audit-grid">
+    <div class="audit-copy rv">
+      <span class="label">Free 48-Hour Leak Audit</span>
+      <h2 class="h2">Find out what your phone is costing you.</h2>
+      <p class="lead">Tell us where to reach you. We'll send the 5 questions, and your one-page Leak Report lands within 48 hours of your answers.</p>
+      <ul class="ticks">
+        <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Free, no obligation</li>
+        <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Your numbers, not an industry average</li>
+        <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Monthly and yearly loss, in dollars</li>
+      </ul>
+    </div>
+
+    <div class="form-card rv">
+      <form class="form" id="audit-form" novalidate>
+        <div class="form-k"><span>Request your audit</span><span>4 fields</span></div>
+        <div class="form-row">
+          <div class="field">
+            <label for="f-name">Your name</label>
+            <input id="f-name" name="name" autocomplete="name" required aria-describedby="e-name">
+            <p class="err" id="e-name"></p>
+          </div>
+          <div class="field">
+            <label for="f-biz">Business name</label>
+            <input id="f-biz" name="business" autocomplete="organization" required aria-describedby="e-biz">
+            <p class="err" id="e-biz"></p>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="f-phone">Mobile number</label>
+            <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(713) 555-0100" required aria-describedby="e-phone">
+            <p class="err" id="e-phone"></p>
+          </div>
+          <div class="field">
+            <label for="f-trade">Trade</label>
+            <select id="f-trade" name="trade" required aria-describedby="e-trade">
+              <option value="" selected disabled>Choose one</option>
+              <option>HVAC</option>
+              <option>Plumbing</option>
+              <option>Electrical</option>
+              <option>Other</option>
+            </select>
+            <p class="err" id="e-trade"></p>
+          </div>
+        </div>
+        <label class="check" for="f-site"><input type="checkbox" id="f-site" name="website_interest"> I'd also like a quote on a new website</label>
+        <div class="hp" aria-hidden="true"><label for="f-hp">Leave this empty</label><input id="f-hp" name="company_url" tabindex="-1" autocomplete="off"></div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="f-submit">Get my free Leak Audit <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <p class="fine">We only use your number to send your audit.</p>
+      </form>
+
+      <div class="success" id="audit-success" tabindex="-1" hidden>
+        <span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg></span>
+        <h3 class="h3" id="success-title">You're in.</h3>
+        <p>Watch your phone. We'll text you the 5 audit questions shortly, and your Leak Report follows within 48 hours of your answers.</p>
+        <a class="btn btn-ghost" id="cal-link" href="#" target="_blank" rel="noopener" hidden>Rather talk now? Book a 15-minute call</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M24.49 7.51A12 12 0 1 0 24.49 24.49"/><path d="M20.24 11.76A6 6 0 1 0 20.24 20.24"/><circle cx="16" cy="16" r="2.1"/></svg>Copperline</a>
+        <p>Every call answered. Every lead followed up.</p>
+        <nav class="foot-nav" aria-label="Footer"><a href="#how">How it works</a><a href="#system">The system</a><a href="#pricing">Pricing</a><a href="#website">Websites</a><a href="#faq">FAQ</a></nav>
+      </div>
+      <div>
+        <h4>Service area</h4>
+        <div class="areas"><span>Houston</span><span>Katy</span><span>Sugar Land</span><span>The Woodlands</span><span>Cypress</span><span>Spring</span><span>Pearland</span><span>Pasadena</span><span>League City</span><span>Humble</span><span>Conroe</span><span>Missouri City</span></div>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <div class="contact">
+          <!-- TODO(Dom): real phone number (both the href and the text) -->
+          <a href="tel:+17135550100">(713) 555-0100</a>
+          <!-- TODO(Dom): real email address (both the href and the text) -->
+          <a href="mailto:hello@yourdomain.com">hello@yourdomain.com</a>
+          <span>Houston, Texas</span>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <!-- TODO(Dom): business legal name, e.g. "Copperline LLC" -->
+      <span>© 2026 Copperline. All rights reserved.</span>
+      <span>Sample calls and businesses shown are illustrations.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  /* ===================== SITE CONFIG: fill these in ===================== */
+  const CONFIG = {
+    // TODO(Dom): URL that receives the audit form as a JSON POST
+    // (GoHighLevel inbound webhook, Formspree, Web3Forms, Zapier, etc.).
+    // While this is empty the form shows its success state but sends nothing.
+    formEndpoint: "",
+    // TODO(Dom): audit booking link (GHL calendar or Cal.com). Empty hides the button.
+    calendarUrl: "",
+    monthlyFee: 750,
+  };
+  /* ===================================================================== */
+
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const ease = p => 1 - Math.pow(1 - p, 3);
+  const hasIO = "IntersectionObserver" in window;
+
+  function whenVisible(el, fn, threshold = 0.35) {
+    if (!hasIO) return fn();
+    const io = new IntersectionObserver(es => {
+      if (es.some(e => e.isIntersecting)) { io.disconnect(); fn(); }
+    }, { threshold });
+    io.observe(el);
+  }
+  const inView = el => { const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; };
+
+  // Header gets a solid backdrop once you scroll
+  const header = $(".site-header");
+  const onScroll = () => header.classList.toggle("scrolled", scrollY > 8);
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Count-up stats (final values are already in the HTML)
+  if (!reduce && hasIO) $$("[data-count]").forEach(el => {
+    if (inView(el)) return;
+    const end = +el.dataset.count;
+    whenVisible(el, () => {
+      const t0 = performance.now(), dur = 1200;
+      const tick = t => {
+        const p = Math.min(1, (t - t0) / dur);
+        el.textContent = Math.round(end * ease(p));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, 0.6);
+  });
+
+  // Hero: sample call plays on a loop
+  const call = $("#call");
+  const wave = $(".wave", call);
+  for (let i = 0; i < 38; i++) {
+    const b = document.createElement("i");
+    const h = 0.22 + Math.abs(Math.sin(i * 0.82) * Math.cos(i * 0.31)) * 0.72;
+    b.style.setProperty("--h", h.toFixed(2));
+    b.style.setProperty("--d", (360 + ((i * 97) % 380)) + "ms");
+    wave.appendChild(b);
+  }
+  if (!reduce) runCall(call);
+
+  async function runCall(card) {
+    const msgs = $$(".msg", card), booked = $(".booked", card), owner = $(".owner", card);
+    const beats = $$(".beat", card), st = $(".st-label", card), t = $(".t", card);
+    let onScreen = true;
+    if (hasIO) new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }, { threshold: 0.15 }).observe(card);
+    const ready = async () => { while (!onScreen || document.hidden) await sleep(400); };
+
+    for (;;) {
+      await ready();
+      card.classList.add("play");
+      beats.forEach(b => b.classList.remove("on"));
+      card.classList.remove("live");
+      card.dataset.state = "ringing";
+      st.textContent = "Ringing";
+      for (let s = 0; s <= 9; s++) { t.textContent = "0:0" + s; await sleep(220); }
+      card.dataset.state = "answered";
+      st.textContent = "Answered in";
+      card.classList.add("live");
+      await sleep(450);  msgs[0].classList.add("on");
+      await sleep(2200); msgs[1].classList.add("on");
+      await sleep(2700); msgs[2].classList.add("on");
+      await sleep(1100); card.classList.remove("live"); booked.classList.add("on");
+      await sleep(1100); owner.classList.add("on");
+      await sleep(5200);
+      card.classList.add("fade"); await sleep(420); card.classList.remove("fade");
+      beats.forEach(b => b.classList.remove("on"));
+      await sleep(250);
+    }
+  }
+
+  // Leak calculator
+  const inputs = { calls: $("#c-calls"), ticket: $("#c-ticket"), rate: $("#c-rate") };
+  const out = { calls: $("#o-calls"), ticket: $("#o-ticket"), rate: $("#o-rate"), month: $("#o-month"), year: $("#o-year"), jobs: $("#o-jobs") };
+  const breakeven = $("#breakeven");
+  let shown = null, raf = 0;
+
+  function fill(el) { el.style.setProperty("--p", ((el.value - el.min) / (el.max - el.min) * 100) + "%"); }
+  function paint(v) {
+    const m = Math.round(v / 10) * 10;
+    out.month.textContent = money.format(m);
+    out.year.textContent = money.format(m * 12);
+  }
+  function tween(to) {
+    cancelAnimationFrame(raf);
+    if (shown === null || reduce) { shown = to; return paint(to); }
+    const from = shown, t0 = performance.now(), dur = 420;
+    const step = t => {
+      const p = Math.min(1, (t - t0) / dur);
+      shown = from + (to - from) * ease(p);
+      paint(shown);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+  function compute() {
+    const calls = +inputs.calls.value, ticket = +inputs.ticket.value, rate = +inputs.rate.value / 100;
+    const jobs = calls * (52 / 12) * 0.8 * rate;   // missed calls per month x never call back x would have booked
+    out.calls.textContent = calls;
+    out.ticket.textContent = money.format(ticket);
+    out.rate.textContent = Math.round(rate * 100) + "%";
+    out.jobs.textContent = Math.round(jobs);
+    Object.values(inputs).forEach(fill);
+    tween(jobs * ticket);
+    const n = Math.max(1, Math.ceil(CONFIG.monthlyFee / ticket));
+    breakeven.innerHTML = `At a <b>${money.format(ticket)}</b> average ticket, <b>${n} booked job${n > 1 ? "s" : ""}</b> a month covers the monthly fee.`;
+  }
+  Object.values(inputs).forEach(el => el.addEventListener("input", compute));
+  compute();
+
+  // Small "play when seen" helper for the system visuals
+  function arm(el, play) {
+    if (!el || reduce || !hasIO || inView(el)) return;
+    el.classList.add("armed");
+    whenVisible(el, () => { el.classList.add("go"); play && play(el); }, 0.4);
+  }
+
+  // Coverage bars fill in
+  const cov = $("#cov");
+  $$(".cov-row", cov).forEach(row => $$("i", row).forEach((seg, i) => seg.style.setProperty("--i", i)));
+  arm(cov);
+
+  // Speed-to-lead thread plays out with a live timer
+  arm($("#sms"), async el => {
+    const steps = $$(".st", el), timer = $("#sms-timer");
+    steps[0].classList.add("on");
+    for (let s = 0; s <= 41; s++) { timer.textContent = "0:" + String(s).padStart(2, "0"); await sleep(28); }
+    for (let i = 1; i < steps.length; i++) { steps[i].classList.add("on"); await sleep(i === 2 ? 900 : 650); }
+  });
+
+  // Review stars fill, count ticks up by one
+  arm($("#rev"), async el => {
+    const count = $("#rev-count");
+    count.textContent = "214 reviews";
+    await sleep(500);
+    for (const s of $$(".stars svg", el)) { s.classList.add("on"); await sleep(170); }
+    await sleep(300);
+    count.textContent = "215 reviews";
+  });
+
+  // Audit form
+  const form = $("#audit-form");
+  const fields = {
+    name:     { el: $("#f-name"),  err: $("#e-name"),  check: v => v.trim().length > 1 || "Enter your name." },
+    business: { el: $("#f-biz"),   err: $("#e-biz"),   check: v => v.trim().length > 1 || "Enter your business name." },
+    phone:    { el: $("#f-phone"), err: $("#e-phone"), check: v => digits(v).length === 10 || "Enter a 10-digit phone number." },
+    trade:    { el: $("#f-trade"), err: $("#e-trade"), check: v => !!v || "Pick your trade." },
+  };
+  function digits(v) { let d = v.replace(/\D/g, ""); if (d.length === 11 && d[0] === "1") d = d.slice(1); return d; }
+  function pretty(v) { const d = digits(v); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : v; }
+  function validate(f) {
+    const r = f.check(f.el.value);
+    const msg = r === true ? "" : r;
+    f.err.textContent = msg;
+    f.el.setAttribute("aria-invalid", msg ? "true" : "false");
+    return !msg;
+  }
+  fields.phone.el.addEventListener("blur", e => { e.target.value = pretty(e.target.value); });
+  Object.values(fields).forEach(f => {
+    f.el.addEventListener("blur", () => { if (f.el.value) validate(f); });
+    f.el.addEventListener("input", () => { if (f.el.getAttribute("aria-invalid") === "true") validate(f); });
+    f.el.addEventListener("change", () => { if (f.el.getAttribute("aria-invalid") === "true") validate(f); });
+  });
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const bad = Object.values(fields).filter(f => !validate(f));
+    if (bad.length) { bad[0].el.focus(); return; }
+    if ($("#f-hp").value) return; // bot
+
+    const btn = $("#f-submit"), errBox = $("#form-error");
+    const label = btn.innerHTML;
+    btn.disabled = true; btn.textContent = "Sending…"; errBox.hidden = true;
+
+    const data = {
+      name: fields.name.el.value.trim(),
+      business: fields.business.el.value.trim(),
+      phone: pretty(fields.phone.el.value),
+      trade: fields.trade.el.value,
+      website_interest: $("#f-site").checked,
+      source: "website",
+      page: location.href,
+      submitted_at: new Date().toISOString(),
+    };
+
+    try {
+      if (CONFIG.formEndpoint) {
+        const res = await fetch(CONFIG.formEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+      } else {
+        console.warn("[Copperline] CONFIG.formEndpoint is empty, so this audit request was not sent anywhere.", data);
+        await sleep(500);
+      }
+      form.hidden = true;
+      const ok = $("#audit-success");
+      $("#success-title").textContent = `You're in, ${data.name.split(/\s+/)[0]}.`;
+      const cal = $("#cal-link");
+      if (CONFIG.calendarUrl) { cal.href = CONFIG.calendarUrl; cal.hidden = false; }
+      ok.hidden = false;
+      ok.focus();
+    } catch (err) {
+      btn.disabled = false; btn.innerHTML = label;
+      errBox.textContent = "That didn't go through. Check your connection and try again in a moment.";
+      errBox.hidden = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
